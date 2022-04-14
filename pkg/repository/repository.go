@@ -12,51 +12,37 @@ import (
 	"time"
 )
 
+type RabbitMQRepo interface {
+	CreateStatus(user model.User) error
+	GetStatusById(id string) (string, error)
+	GetStatusByUid(uid int) (model.User, error)
+	UpdateStatus(id string, user model.User) error
+	DeleteSatus(id string) error
+}
+
+//	*mongo.Collection
 type Repository struct {
-	*mongo.Collection
+	RabbitMQRepo
 }
 
 func NewRepository(collection *mongo.Collection) *Repository {
-	return &Repository{Collection: collection}
+	return &Repository{
+		NewRebbitMqRepo(collection),
+	}
 }
 
 func ser() model.User {
 	ser := model.User{}
 	ser.Uid = 14
-	ser.Following = append(ser.Following, 4)
+	ser.Following = 4
 	ser.Page = append(ser.Page, model.Page{Id: 10})
-	return ser
-}
-
-func ser1() model.User {
-	ser := model.User{}
-	ser.Uid = 14
-	ser.Following = append(ser.Following, 4)
-	ser.Page = append(ser.Page, model.Page{Id: 10})
-	return ser
-}
-func ser2() model.User {
-	ser := model.User{}
-	ser.Uid = 15
-	ser.Following = append(ser.Following, 4)
-	ser.Page = append(ser.Page, model.Page{Id: 10})
-	return ser
-}
-func ser3() model.User {
-	ser := model.User{}
-	ser.Uid = 14
-	ser.Following = append(ser.Following, 4)
-	post := model.Post{Id: 18, Comments: []int{2, 3, 4}}
-	var pit []model.Post
-	pit = append(pit, post)
-	ser.Page = append(ser.Page, model.Page{Id: 10, Post: pit})
 	return ser
 }
 
 func (db Repository) TestCol() {
 	ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
 
-	result, err := db.Collection.InsertOne(ctx, ser3())
+	result, err := db.Collection.InsertOne(ctx, ser())
 	if err != nil {
 		fmt.Println("err1")
 		fmt.Println(err)
@@ -84,6 +70,24 @@ func (db Repository) FindeOne(str string) {
 		fmt.Println(err)
 	}
 	fmt.Println(myuser)
+}
+
+func (db Repository) GetId(uid int) (string, error) {
+	var myuser model.User
+
+	ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
+	filter := bson.M{"uid": uid}
+	result := db.Collection.FindOne(ctx, filter)
+	if result.Err() != nil {
+		fmt.Println("Resalt eror!@#!!!")
+	}
+	if err := result.Decode(&myuser); err != nil {
+		fmt.Println("ne dicodits !0981904")
+		fmt.Println(err)
+	}
+	fmt.Println(myuser)
+
+	return myuser.Id, nil
 }
 
 func (db Repository) GetAll() {
@@ -124,7 +128,7 @@ func (db Repository) UpdetePut(s string) {
 	filter := bson.D{{"_id", se}}
 
 	var gotovoe bson.M
-	userBytes, err := bson.Marshal(ser2())
+	userBytes, err := bson.Marshal(ser())
 	if err := bson.Unmarshal(userBytes, &gotovoe); err != nil {
 		fmt.Println("gotovoe")
 		fmt.Println(err)

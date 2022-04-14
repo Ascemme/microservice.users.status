@@ -1,6 +1,8 @@
 package service
 
-import "github.com/Ascemme/microservice.users.status/pkg/repository"
+import (
+	"github.com/Ascemme/microservice.users.status/pkg/repository"
+)
 
 type Service struct {
 	repo *repository.Repository
