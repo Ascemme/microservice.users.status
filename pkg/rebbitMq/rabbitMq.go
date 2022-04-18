@@ -34,11 +34,4 @@ func (ch *ChannelMQ) GetMassage() <-chan amqp.Delivery {
 
 	return msgs
 
-	//for msg := range ch.ChanMap {
-	//	var ses map[string]int
-	//	json.Unmarshal(msg.Body, &ses)
-	//	fmt.Println(ses)
-	//	//ch.ChanMap <- ses
-	//}
-
 }

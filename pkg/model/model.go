@@ -10,6 +10,8 @@ type Page struct {
 	Id          int    `json:"id" bson:"id"`
 	Subscribers int    `json:"subscribers" bson:"subscribers"`
 	Post        []Post `json:"post" bson:"post"`
+	Likes       int    `json:"likes"bson:"likes"`
+	Dislikes    int    `json:"dislikes"bson:"dislikes"`
 }
 type Post struct {
 	Id       int `json:"id" bson:"id"`

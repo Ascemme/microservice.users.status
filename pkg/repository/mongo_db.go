@@ -24,16 +24,7 @@ func ConnectionDb() *mongo.Collection {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer client.Disconnect(ctx)
 
 	newDatabase := client.Database("Status")
-
-	newCollection := NewRepository(newDatabase.Collection("Users"))
-	//newCollection.TestCol()
-	//newCollection.FindeOne("62554d9a6b3ceac027cd2eac")
-	//newCollection.GetAll()
-	//newCollection.DeleteColomn("62554d9a6b3ceac027cd2eac")
-	//newCollection.UpdetePut("62554d933558add9ee6275c6")
-	newCollection.GetId(14)
 	return newDatabase.Collection("Users")
 }

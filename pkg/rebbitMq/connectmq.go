@@ -33,5 +33,18 @@ func ConnectionMQ() (*amqp.Channel, error) {
 		return nil, errors.New("chnael")
 	}
 	_, err = ch.QueueDeclare(name, false, false, false, false, nil)
+	createEx(ch, "testTutut")
 	return ch, nil
+}
+func createEx(ch *amqp.Channel, name string) {
+	ch.ExchangeDeclare(
+		name,     // name
+		"direct", // type
+		true,     // durable
+		false,    // auto-deleted
+		false,    // internal
+		false,    // no-wait
+		nil,      // arguments
+	)
+
 }
