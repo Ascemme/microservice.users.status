@@ -23,12 +23,12 @@ func main() {
 
 	// rabbitMq
 
-	mqChan, err := rebbitMq.ConnectionMQ()
+	mqChan, err := rebbitMq.ConnectionMQ("Status", "ServiceOne")
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	chanls := rebbitMq.NewChannelMQ(mqChan)
+	chanls := rebbitMq.NewChannelMQ(mqChan, "Status", "ServiceOne")
 	cn := chanls.GetMassage()
 
 	go services.ServiceMq(cn)

@@ -7,11 +7,13 @@ import (
 )
 
 type ChannelMQ struct {
-	ChanMq *amqp.Channel
+	ChanMq       *amqp.Channel
+	NameKey      string
+	NameExchange string
 }
 
-func NewChannelMQ(chanMq *amqp.Channel) *ChannelMQ {
-	return &ChannelMQ{ChanMq: chanMq}
+func NewChannelMQ(chanMq *amqp.Channel, nameKey string, nameExchange string) *ChannelMQ {
+	return &ChannelMQ{ChanMq: chanMq, NameKey: nameKey, NameExchange: nameExchange}
 }
 
 func ErrorGeter(err error, msg string) {
@@ -21,8 +23,8 @@ func ErrorGeter(err error, msg string) {
 	}
 }
 
-func ConnectionMQ() (*amqp.Channel, error) {
-	var name string = "test1"
+func ConnectionMQ(nameKey, nameExchange string) (*amqp.Channel, error) {
+
 	conn, err := amqp.Dial("amqp://ascemme:passwordqwe@localhost:5672/")
 	if err != nil {
 		return nil, errors.New("connection")
@@ -32,19 +34,16 @@ func ConnectionMQ() (*amqp.Channel, error) {
 	if err != nil {
 		return nil, errors.New("chnael")
 	}
-	_, err = ch.QueueDeclare(name, false, false, false, false, nil)
-	createEx(ch, "testTutut")
-	return ch, nil
-}
-func createEx(ch *amqp.Channel, name string) {
-	ch.ExchangeDeclare(
-		name,     // name
-		"direct", // type
-		true,     // durable
-		false,    // auto-deleted
-		false,    // internal
-		false,    // no-wait
-		nil,      // arguments
-	)
+	_, err = ch.QueueDeclare(nameKey, false, false, false, false, nil)
 
+	ch.ExchangeDeclare(
+		nameExchange, // name
+		"direct",     // type
+		true,         // durable
+		false,        // auto-deleted
+		false,        // internal
+		false,        // no-wait
+		nil,          // arguments
+	)
+	return ch, nil
 }
