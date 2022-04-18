@@ -1,13 +1,13 @@
 syntax = "proto3";
-option go_package = "github.com/Ascemme/microservice.users.status";
-package api;
+option go_package = "ascemme/grpcProto";
+package grpcProto;
 
-service statusGrpc{
-  rpc getStatus(RequestStatus) returns (ResponseStatus){}
+service StatusGrpc{
+  rpc Status(RequestStatus) returns (ResponseStatus){}
 }
 
 message RequestStatus{
-  int32 uuid = 1;
+  int32 Uid = 1;
 }
 
 message ResponseStatus{
