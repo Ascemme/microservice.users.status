@@ -1,0 +1,16 @@
+syntax = "proto3";
+option go_package = "ascemme/grpcProto";
+package grpcProto;
+
+service StatusGrpc{
+  rpc Status(RequestStatus) returns (ResponseStatus){}
+}
+
+message RequestStatus{
+  int32 uid = 1;
+}
+
+message ResponseStatus{
+  bytes result = 1;
+}
+
