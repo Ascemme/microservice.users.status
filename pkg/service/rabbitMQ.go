@@ -50,11 +50,12 @@ func (s *Service) rabbiMQLogic(msg model.Massage) error {
 func (s *Service) dislike(msg model.Massage) error {
 	user, err := s.repo.GetStatusByUid(msg.Uid)
 	if err != nil {
-		return err
+		log.Println(err)
 	}
 
 	if user.Id == "" {
-		page := []model.Page{{Id: msg.Page, Dislikes: 1}}
+		posts := []model.Post{{Id: msg.Post, Dislike: 1}}
+		page := []model.Page{{Id: msg.Page, Post: posts}}
 		user = model.User{Uid: msg.Uid, Page: page}
 		err := s.repo.CreateStatus(user)
 		if err != nil {
@@ -65,14 +66,22 @@ func (s *Service) dislike(msg model.Massage) error {
 
 	pageId, err := s.sortingSlicePage(msg.Page, user.Page)
 	pages := user.Page
-
 	if err != nil {
-		pages = append(pages, model.Page{Id: msg.Page, Dislikes: 1})
+		posts := []model.Post{{Id: msg.Post, Dislike: 1}}
+		pages = append(pages, model.Page{Id: msg.Page, Post: posts})
+		user.Page = pages
+		return s.repo.UpdateStatus(user)
+	}
+	postId, err := s.sortingSlicePage(msg.Page, user.Page)
+	if err != nil {
+		posts := user.Page[pageId].Post
+		post := model.Post{Id: msg.Post, Dislike: 1}
+		posts = append(posts, post)
 		user.Page = pages
 		return s.repo.UpdateStatus(user)
 	}
 
-	user.Page[pageId].Dislikes += 1
+	user.Page[pageId].Post[postId].Dislike += 1
 	err = s.repo.UpdateStatus(user)
 	if err != nil {
 		return err
@@ -84,11 +93,12 @@ func (s *Service) dislike(msg model.Massage) error {
 func (s *Service) likes(msg model.Massage) error {
 	user, err := s.repo.GetStatusByUid(msg.Uid)
 	if err != nil {
-		return err
+		log.Println(err)
 	}
 
 	if user.Id == "" {
-		page := []model.Page{{Id: msg.Page, Likes: 1}}
+		posts := []model.Post{{Id: msg.Post, Likes: 1}}
+		page := []model.Page{{Id: msg.Page, Post: posts}}
 		user = model.User{Uid: msg.Uid, Page: page}
 		err := s.repo.CreateStatus(user)
 		if err != nil {
@@ -101,12 +111,22 @@ func (s *Service) likes(msg model.Massage) error {
 	pageId, err := s.sortingSlicePage(msg.Page, user.Page)
 	pages := user.Page
 	if err != nil {
-		pages = append(pages, model.Page{Id: msg.Page, Likes: 1})
+		posts := []model.Post{{Id: msg.Post, Likes: 1}}
+		page := model.Page{Id: msg.Page, Post: posts}
+		pages = append(pages, page)
+		user.Page = pages
+		return s.repo.UpdateStatus(user)
+	}
+	postId, err := s.sortingSlicePage(msg.Page, user.Page)
+	post := user.Page[pageId].Post
+	if err != nil {
+		posts := model.Post{Id: msg.Post, Likes: 1}
+		post = append(post, posts)
 		user.Page = pages
 		return s.repo.UpdateStatus(user)
 	}
 
-	user.Page[pageId].Likes += 1
+	user.Page[pageId].Post[postId].Likes += 1
 
 	err = s.repo.UpdateStatus(user)
 	if err != nil {
@@ -119,7 +139,7 @@ func (s *Service) likes(msg model.Massage) error {
 func (s *Service) following(msg model.Massage) error {
 	user, err := s.repo.GetStatusByUid(msg.Uid)
 	if err != nil {
-		return err
+		log.Println(err)
 	}
 
 	if user.Id == "" {
@@ -144,7 +164,7 @@ func (s *Service) following(msg model.Massage) error {
 func (s *Service) comments(msg model.Massage) error {
 	user, err := s.repo.GetStatusByUid(msg.Uid)
 	if err != nil {
-		return err
+		log.Println(err)
 	}
 
 	if user.Id == "" {
@@ -187,7 +207,7 @@ func (s *Service) comments(msg model.Massage) error {
 func (s *Service) subscribers(msg model.Massage) error {
 	user, err := s.repo.GetStatusByUid(msg.Uid)
 	if err != nil {
-		return err
+		log.Println(err)
 	}
 
 	if user.Id == "" {
@@ -222,7 +242,7 @@ func (s *Service) subscribers(msg model.Massage) error {
 func (s *Service) page(msg model.Massage) error {
 	user, err := s.repo.GetStatusByUid(msg.Uid)
 	if err != nil {
-		return err
+		log.Println(err)
 	}
 
 	if user.Id == "" {
@@ -255,7 +275,7 @@ func (s *Service) page(msg model.Massage) error {
 func (s *Service) post(msg model.Massage) error {
 	user, err := s.repo.GetStatusByUid(msg.Uid)
 	if err != nil {
-		return err
+		log.Println(err)
 	}
 
 	if user.Id == "" {
@@ -294,7 +314,7 @@ func (s *Service) post(msg model.Massage) error {
 func (s *Service) delete(msg model.Massage) error {
 	user, err := s.repo.GetStatusByUid(msg.Uid)
 	if err != nil {
-		return err
+		log.Println(err)
 	}
 	if msg.Post != 0 {
 		pageId, err := s.sortingSlicePage(msg.Page, user.Page)

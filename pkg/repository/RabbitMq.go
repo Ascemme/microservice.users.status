@@ -73,8 +73,6 @@ func (db *RebbitMqRepo) GetAll() ([]model.User, error) {
 	}
 
 	for cur.Next(ctx) {
-
-		// create a value into which the single document can be decoded
 		var myuser model.User
 		err := cur.Decode(&myuser)
 		if err != nil {

@@ -2,6 +2,7 @@ package microservice_users_status
 
 import (
 	"github.com/Ascemme/microservice.users.status/pkg/handler"
+	"github.com/Ascemme/microservice.users.status/pkg/repository"
 	"github.com/Ascemme/microservice.users.status/protos/ascemme/grpcProto"
 	"github.com/gorilla/mux"
 	"google.golang.org/grpc"
@@ -11,7 +12,7 @@ import (
 	"time"
 )
 
-func Run(r *mux.Router) {
+func Run(r *mux.Router, repo *repository.Repository) {
 	srv := &http.Server{
 		Handler: r,
 		Addr:    "127.0.0.1:8000",
@@ -22,7 +23,8 @@ func Run(r *mux.Router) {
 
 	s := grpc.NewServer()
 
-	rpcSrv := &handler.GRPCServer{}
+	rpcSrv := handler.NewGRPCServer(repo)
+
 	grpcProto.RegisterStatusGrpcServer(s, rpcSrv)
 
 	listen, err := net.Listen("tcp", ":8089")

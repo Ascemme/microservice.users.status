@@ -35,5 +35,5 @@ func main() {
 
 	//running server
 	apis.ApiGroup(r)
-	server.Run(r)
+	server.Run(r, repositories)
 }
